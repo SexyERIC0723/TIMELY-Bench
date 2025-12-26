@@ -1,0 +1,41 @@
+{
+  "name": "TIMELY-Bench Alignment Protocols",
+  "version": "1.0",
+  "protocols": [
+    {
+      "id": "D0_daily",
+      "window_before_hours": 24,
+      "window_after_hours": 24,
+      "description": "Same calendar day alignment (D0)",
+      "use_case": "Aggregated daily features, daily summaries"
+    },
+    {
+      "id": "±6h",
+      "window_before_hours": 6,
+      "window_after_hours": 6,
+      "description": "±6 hour window around pattern detection",
+      "use_case": "Tight temporal alignment for acute changes"
+    },
+    {
+      "id": "±12h",
+      "window_before_hours": 12,
+      "window_after_hours": 12,
+      "description": "±12 hour window around pattern detection",
+      "use_case": "Medium temporal alignment for shift-based notes"
+    },
+    {
+      "id": "±24h",
+      "window_before_hours": 24,
+      "window_after_hours": 24,
+      "description": "±24 hour window around pattern detection",
+      "use_case": "Broad alignment for comprehensive context"
+    },
+    {
+      "id": "asymmetric",
+      "window_before_hours": 6,
+      "window_after_hours": 2,
+      "description": "Asymmetric window (-6h, +2h) - default",
+      "use_case": "Predictive modeling, causal alignment"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+# TIMELY-Bench v2.0 Configuration
+# ================================
+
+# 数据路径
+data:
+  cohort: "data/processed/merge_output/cohort_final.csv"
+  llm_features: "data/llm_features/llm_features_deepseek.csv"
+  windows:
+    - "6h"
+    - "12h"
+    - "24h"
+
+# 数据分割
+splits:
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  random_seed: 42
+
+# 预测任务
+tasks:
+  - "mortality"
+  - "prolonged_los"
+  # - "readmission"  # 效果较差，可选
+
+# 队列
+cohorts:
+  - "all"
+  - "sepsis"
+  - "aki"
+
+# 模型参数
+models:
+  xgboost:
+    n_estimators: 100
+    max_depth: 5
+    learning_rate: 0.1
+    random_state: 42
+
+  logistic_regression:
+    max_iter: 1000
+    class_weight: "balanced"
+
+  gru:
+    hidden_size: 128
+    num_layers: 2
+    dropout: 0.3
+    learning_rate: 0.001
+    batch_size: 64
+    epochs: 50
+
+# 评估
+evaluation:
+  n_folds: 5
+  metrics:
+    - "auroc"
+    - "auprc"
+    - "brier"
+    - "ece"

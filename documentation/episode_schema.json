@@ -1,0 +1,477 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TIMELY-Bench Episode",
+  "description": "Multi-modal clinical reasoning benchmark data package",
+  "type": "object",
+  "required": [
+    "episode_id",
+    "stay_id",
+    "timeseries",
+    "labels"
+  ],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^TIMELY_v2_\\d+$",
+      "description": "Unique episode identifier"
+    },
+    "stay_id": {
+      "type": "integer",
+      "description": "MIMIC ICU stay identifier"
+    },
+    "patient": {
+      "type": "object",
+      "properties": {
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "M",
+            "F",
+            null
+          ]
+        },
+        "subject_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "hadm_id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "timeseries": {
+      "type": "object",
+      "required": [
+        "vitals",
+        "labs"
+      ],
+      "properties": {
+        "vitals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "hour"
+            ],
+            "properties": {
+              "hour": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "heart_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "sbp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "dbp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "mbp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "resp_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "temperature": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "spo2": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "gcs": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "urineoutput": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "labs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "hour"
+            ],
+            "properties": {
+              "hour": {
+                "type": "integer"
+              },
+              "creatinine": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "bun": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "sodium": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "potassium": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "lactate": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "wbc": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "hemoglobin": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "platelet": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "start_hour": {
+          "type": "integer",
+          "default": 0
+        },
+        "end_hour": {
+          "type": "integer",
+          "default": 24
+        },
+        "missing_rate": {
+          "type": "object"
+        }
+      }
+    },
+    "clinical_text": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "note_id",
+              "note_type",
+              "chart_hour"
+            ],
+            "properties": {
+              "note_id": {
+                "type": "string"
+              },
+              "note_type": {
+                "type": "string"
+              },
+              "note_category": {
+                "type": "string"
+              },
+              "chart_hour": {
+                "type": "integer"
+              },
+              "text_full": {
+                "type": "string"
+              },
+              "text_relevant": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "llm_features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "note_id": {
+                "type": "string"
+              },
+              "pneumonia": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "edema": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "pleural_effusion": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "pneumothorax": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "tubes_lines": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "reasoning": {
+      "type": "object",
+      "properties": {
+        "condition_graph": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "nodes": {
+              "type": "array"
+            },
+            "edges": {
+              "type": "array"
+            },
+            "primary_condition": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "detected_patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "pattern_name",
+              "detection_hour",
+              "value"
+            ],
+            "properties": {
+              "pattern_name": {
+                "type": "string"
+              },
+              "detection_hour": {
+                "type": "integer"
+              },
+              "value": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "mild",
+                  "moderate",
+                  "severe"
+                ]
+              }
+            }
+          }
+        },
+        "pattern_annotations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pattern_name": {
+                "type": "string"
+              },
+              "pattern_hour": {
+                "type": "integer"
+              },
+              "note_id": {
+                "type": "string"
+              },
+              "alignment_quality": {
+                "type": "string"
+              },
+              "annotation_category": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "SUPPORTIVE",
+                  "CONTRADICTORY",
+                  "UNRELATED",
+                  "AMBIGUOUS",
+                  null
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "required": [
+        "outcome"
+      ],
+      "properties": {
+        "outcome": {
+          "type": "object",
+          "required": [
+            "mortality",
+            "prolonged_los"
+          ],
+          "properties": {
+            "mortality": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ]
+            },
+            "prolonged_los": {
+              "type": "integer",
+              "enum": [
+                0,
+                1
+              ]
+            },
+            "readmission_30d": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "los_days": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        },
+        "process": {
+          "type": "object",
+          "properties": {
+            "sepsis_onset_hour": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "aki_onset_hour": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "ards_onset_hour": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "has_sepsis": {
+          "type": "boolean"
+        },
+        "has_aki": {
+          "type": "boolean"
+        },
+        "has_ards": {
+          "type": "boolean"
+        },
+        "icd_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string"
+        },
+        "source_database": {
+          "type": "string"
+        },
+        "observation_window_hours": {
+          "type": "integer"
+        },
+        "data_quality_score": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
