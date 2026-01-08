@@ -243,6 +243,104 @@ class EpisodeBuilder:
         self.data_loaded = True
         print("All data loaded")
 
+    def load_all_data_full(self):
+        """加载所有数据文件（使用完整47GB对齐数据）"""
+        print("Loading data files (FULL mode - 47GB alignment data)...")
+
+        # 时序数据
+        if TIMESERIES_FILE.exists():
+            self.timeseries_df = pd.read_csv(TIMESERIES_FILE)
+            self.timeseries_df['stay_id'] = self.timeseries_df['stay_id'].astype(int)
+            self.timeseries_grouped = self.timeseries_df.groupby('stay_id')
+            print(f"   timeseries.csv: {len(self.timeseries_df)} records ({self.timeseries_grouped.ngroups} stay_ids)")
+        else:
+            print(f"   timeseries.csv not found")
+
+        # 队列数据
+        if COHORT_FILE.exists():
+            self.cohort_df = pd.read_csv(COHORT_FILE)
+            self.cohort_df['stay_id'] = self.cohort_df['stay_id'].astype(int)
+            print(f"   cohort_final.csv: {len(self.cohort_df)} patients")
+        else:
+            print(f"   cohort_final.csv not found")
+
+        # 笔记时间
+        if NOTE_TIME_FILE.exists():
+            self.notes_df = pd.read_csv(NOTE_TIME_FILE)
+            if 'stay_id' in self.notes_df.columns:
+                self.notes_df['stay_id'] = self.notes_df['stay_id'].astype(int)
+                self.notes_grouped = self.notes_df.groupby('stay_id')
+            print(f"   note_time.csv: {len(self.notes_df)} notes")
+        else:
+            print(f"   note_time.csv not found")
+
+        # 强制使用完整对齐数据（47GB）
+        if ALIGNMENT_FILE.exists():
+            file_size_gb = ALIGNMENT_FILE.stat().st_size / 1e9
+            print(f"   temporal_textual_alignment.csv: {file_size_gb:.1f} GB (FULL)")
+            print(f"   直接加载到内存（需要 ~6 分钟）...")
+            import time
+            start = time.time()
+            self.alignment_df = pd.read_csv(ALIGNMENT_FILE, low_memory=True)
+            if 'stay_id' in self.alignment_df.columns:
+                self.alignment_df['stay_id'] = self.alignment_df['stay_id'].astype(int)
+            load_time = time.time() - start
+            print(f"   加载完成: {len(self.alignment_df):,} 条对齐记录, 耗时 {load_time:.1f}秒")
+            print(f"   创建 stay_id 分组索引...")
+            self.alignment_grouped = self.alignment_df.groupby('stay_id')
+            print(f"   分组完成: {self.alignment_grouped.ngroups:,} 个 stay_id")
+        else:
+            print(f"   temporal_textual_alignment.csv not found")
+
+        # 模式检测
+        if PATTERNS_FILE.exists():
+            self.patterns_df = pd.read_csv(PATTERNS_FILE)
+            if 'stay_id' in self.patterns_df.columns:
+                self.patterns_df['stay_id'] = self.patterns_df['stay_id'].astype(int)
+                self.patterns_grouped = self.patterns_df.groupby('stay_id')
+            print(f"   detected_patterns_24h.csv: {len(self.patterns_df)} patterns ({self.patterns_grouped.ngroups} stay_ids)")
+        else:
+            print(f"   detected_patterns_24h.csv not found")
+
+        # LLM特征
+        if LLM_FEATURES_FILE.exists():
+            self.llm_features_df = pd.read_csv(LLM_FEATURES_FILE)
+            if 'stay_id' in self.llm_features_df.columns:
+                self.llm_features_df['stay_id'] = self.llm_features_df['stay_id'].astype(int)
+                self.llm_features_grouped = self.llm_features_df.groupby('stay_id')
+            print(f"   llm_features_deepseek.csv: {len(self.llm_features_df)} features")
+        else:
+            print(f"   llm_features_deepseek.csv not found")
+
+        # 标注样本
+        annotated_files = list(ANNOTATIONS_DIR.glob('annotated_samples_*.csv'))
+        if annotated_files:
+            dfs = [pd.read_csv(f) for f in annotated_files]
+            self.annotated_df = pd.concat(dfs, ignore_index=True)
+            if 'stay_id' in self.annotated_df.columns:
+                self.annotated_df['stay_id'] = self.annotated_df['stay_id'].astype(int)
+                self.annotated_grouped = self.annotated_df.groupby('stay_id')
+            print(f"   annotated_samples: {len(self.annotated_df)} annotations ({self.annotated_grouped.ngroups if self.annotated_grouped else 0} stay_ids)")
+        else:
+            print(f"   No annotated_samples files found")
+
+        # 加载生理学模板
+        templates_file = ROOT_DIR / 'documentation' / 'pattern_templates.json'
+        if templates_file.exists():
+            with open(templates_file, 'r', encoding='utf-8') as f:
+                templates_data = json.load(f)
+            for disease_key, disease_data in templates_data.items():
+                for pattern in disease_data.get('patterns', []):
+                    self.pattern_templates[pattern['name']] = {
+                        'disease': disease_data['disease'],
+                        'clinical_standard': disease_data['clinical_standard'],
+                        **pattern
+                    }
+            print(f"   pattern_templates: {len(self.pattern_templates)} templates loaded")
+
+        self.data_loaded = True
+        print("All data loaded (FULL mode)")
+
     def build_timeseries(self, stay_id: int) -> TimeSeriesData:
         """构建时序数据"""
         ts_data = TimeSeriesData()
@@ -462,51 +560,55 @@ class EpisodeBuilder:
                 )
 
                 # === Bug4修复：三层模糊匹配策略 ===
-                # 添加LLM标注（如果有）
-                if self.annotated_df is not None:
+                # 添加LLM标注（如果有）- 使用字典索引优化
+                if self.annotated_df is not None and self.annotated_grouped is not None:
                     match = None
                     pattern_hour = annotation.pattern_hour
                     
-                    # 第1层：精确匹配（stay_id, pattern_name, pattern_hour, note_type）
-                    match = self.annotated_df[
-                        (self.annotated_df['stay_id'] == stay_id) &
-                        (self.annotated_df['pattern_name'] == annotation.pattern_name) &
-                        (self.annotated_df['pattern_hour'] == pattern_hour) &
-                        (self.annotated_df['note_type'] == annotation.note_type)
-                    ]
-                    
-                    # 第2层：±0.5h容差匹配（处理数据版本导致的微小偏移）
-                    if len(match) == 0:
-                        match = self.annotated_df[
-                            (self.annotated_df['stay_id'] == stay_id) &
-                            (self.annotated_df['pattern_name'] == annotation.pattern_name) &
-                            (self.annotated_df['pattern_hour'] >= pattern_hour - 0.5) &
-                            (self.annotated_df['pattern_hour'] <= pattern_hour + 0.5) &
-                            (self.annotated_df['note_type'] == annotation.note_type)
+                    # 使用 groupby 索引进行 O(1) 查找
+                    try:
+                        # 先获取该 stay_id 的所有标注
+                        stay_annots = self.annotated_grouped.get_group(stay_id)
+                        
+                        # 在小数据集上进行过滤
+                        # 第1层：精确匹配（pattern_name, pattern_hour, note_type）
+                        match = stay_annots[
+                            (stay_annots['pattern_name'] == annotation.pattern_name) &
+                            (stay_annots['pattern_hour'] == pattern_hour) &
+                            (stay_annots['note_type'] == annotation.note_type)
                         ]
+                        
+                        # 第2层：±0.5h容差匹配
+                        if len(match) == 0:
+                            match = stay_annots[
+                                (stay_annots['pattern_name'] == annotation.pattern_name) &
+                                (stay_annots['pattern_hour'] >= pattern_hour - 0.5) &
+                                (stay_annots['pattern_hour'] <= pattern_hour + 0.5) &
+                                (stay_annots['note_type'] == annotation.note_type)
+                            ]
+                        
+                        # 第3层：±1h容差 + 放宽note_type
+                        if len(match) == 0:
+                            match = stay_annots[
+                                (stay_annots['pattern_name'] == annotation.pattern_name) &
+                                (stay_annots['pattern_hour'] >= pattern_hour - 1) &
+                                (stay_annots['pattern_hour'] <= pattern_hour + 1)
+                            ]
+                        
+                        # 第4层：仅基于pattern_name的最近邻匹配
+                        if len(match) == 0:
+                            pattern_annots = stay_annots[
+                                stay_annots['pattern_name'] == annotation.pattern_name
+                            ]
+                            if len(pattern_annots) > 0:
+                                pattern_annots = pattern_annots.copy()
+                                pattern_annots['hour_diff'] = abs(pattern_annots['pattern_hour'] - pattern_hour)
+                                match = pattern_annots.nsmallest(1, 'hour_diff')
+                    except KeyError:
+                        # 该 stay_id 没有标注数据
+                        match = None
                     
-                    # 第3层：±1h容差 + 放宽note_type维度（回退匹配）
-                    if len(match) == 0:
-                        match = self.annotated_df[
-                            (self.annotated_df['stay_id'] == stay_id) &
-                            (self.annotated_df['pattern_name'] == annotation.pattern_name) &
-                            (self.annotated_df['pattern_hour'] >= pattern_hour - 1) &
-                            (self.annotated_df['pattern_hour'] <= pattern_hour + 1)
-                        ]
-                    
-                    # 第4层：仅基于stay_id和pattern_name的最近邻匹配（最后手段）
-                    if len(match) == 0:
-                        patient_pattern_annots = self.annotated_df[
-                            (self.annotated_df['stay_id'] == stay_id) &
-                            (self.annotated_df['pattern_name'] == annotation.pattern_name)
-                        ]
-                        if len(patient_pattern_annots) > 0:
-                            # 选择pattern_hour最接近的
-                            patient_pattern_annots = patient_pattern_annots.copy()
-                            patient_pattern_annots['hour_diff'] = abs(patient_pattern_annots['pattern_hour'] - pattern_hour)
-                            match = patient_pattern_annots.nsmallest(1, 'hour_diff')
-                    
-                    if len(match) > 0:
+                    if match is not None and len(match) > 0:
                         # 如果有多个匹配，选择置信度最高的
                         if len(match) > 1 and 'annotation_confidence' in match.columns:
                             match = match.sort_values('annotation_confidence', ascending=False)

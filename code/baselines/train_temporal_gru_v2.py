@@ -454,8 +454,7 @@ def main():
         # 学习率调度器
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode='max', factor=LR_SCHEDULER_FACTOR,
-            patience=LR_SCHEDULER_PATIENCE, min_lr=LR_SCHEDULER_MIN_LR,
-            verbose=True
+            patience=LR_SCHEDULER_PATIENCE, min_lr=LR_SCHEDULER_MIN_LR
         )
 
         # Early Stopping

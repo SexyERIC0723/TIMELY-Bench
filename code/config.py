@@ -10,7 +10,7 @@ from pathlib import Path
 # 路径配置
 # ==========================================
 # 项目根目录 (自动计算，支持从任意位置运行)
-_SCRIPT_DIR = Path(__file__).parent
+_SCRIPT_DIR = Path(__file__).resolve().parent
 if _SCRIPT_DIR.name == 'code':
     ROOT_DIR = _SCRIPT_DIR.parent
 elif _SCRIPT_DIR.name in ('baselines', 'data_processing'):
