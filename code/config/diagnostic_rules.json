@@ -1,0 +1,128 @@
+{
+    "sirs_criteria": {
+        "description": "SIRS (≥2条同时满足)",
+        "reference": "PMID: 1303622",
+        "patterns": [
+            {
+                "name": "fever",
+                "feature": "temperature",
+                "op": ">",
+                "value": 38.3
+            },
+            {
+                "name": "hypothermia",
+                "feature": "temperature",
+                "op": "<",
+                "value": 36.0
+            },
+            {
+                "name": "tachycardia",
+                "feature": "heart_rate",
+                "op": ">",
+                "value": 90
+            },
+            {
+                "name": "tachypnea",
+                "feature": "resp_rate",
+                "op": ">",
+                "value": 20
+            },
+            {
+                "name": "leukocytosis",
+                "feature": "wbc",
+                "op": ">",
+                "value": 12.0
+            },
+            {
+                "name": "leukopenia",
+                "feature": "wbc",
+                "op": "<",
+                "value": 4.0
+            }
+        ],
+        "logic": "any_n",
+        "min_count": 2,
+        "time_window_hours": 6
+    },
+    "infection_evidence": {
+        "description": "感染证据 (从文本提取)",
+        "text_keywords": [
+            "infection",
+            "sepsis",
+            "septic",
+            "bacteremia",
+            "pneumonia",
+            "antibiotic",
+            "culture positive",
+            "gram positive",
+            "gram negative",
+            "abscess",
+            "cellulitis",
+            "uti",
+            "urinary tract infection",
+            "meningitis",
+            "endocarditis",
+            "osteomyelitis"
+        ],
+        "medcat_concepts": [
+            "has_sepsis",
+            "has_pneumonia",
+            "has_infection",
+            "has_antibiotic"
+        ]
+    },
+    "sepsis_combined": {
+        "description": "Sepsis = SIRS + 感染证据",
+        "requires": [
+            "sirs_criteria",
+            "infection_evidence"
+        ],
+        "logic": "all"
+    },
+    "aki_kdigo": {
+        "description": "AKI KDIGO 分期",
+        "reference": "PMID: 25018915",
+        "baseline": "min_first_24h",
+        "stages": {
+            "1": {
+                "creatinine_delta": 0.3,
+                "or_ratio": 1.5,
+                "window_hours": 48
+            },
+            "2": {
+                "creatinine_ratio": 2.0,
+                "window_hours": 168
+            },
+            "3": {
+                "creatinine_ratio": 3.0,
+                "or_absolute": 4.0,
+                "window_hours": 168
+            }
+        }
+    },
+    "ards_simplified": {
+        "description": "ARDS 简化标准 (无胸片)",
+        "patterns": [
+            {
+                "name": "hypoxemia",
+                "feature": "spo2",
+                "op": "<",
+                "value": 90
+            },
+            {
+                "name": "resp_failure",
+                "feature": "resp_rate",
+                "op": ">",
+                "value": 30
+            }
+        ],
+        "text_keywords": [
+            "ards",
+            "acute respiratory distress",
+            "bilateral infiltrates",
+            "pulmonary edema",
+            "respiratory failure"
+        ],
+        "requires_both": true
+    }
+}
