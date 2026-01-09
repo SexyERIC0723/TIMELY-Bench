@@ -10,8 +10,6 @@
 | **License** | PhysioNet Credentialed Health Data License |
 | **Last Updated** | January 2026 |
 
----
-
 ## Cohort Statistics
 
 | Metric | Value |
@@ -21,8 +19,6 @@
 | **Unique Patients** | 52,417 |
 | **Observation Window** | First 24 hours of ICU stay |
 | **Time Period** | 2008-2019 |
-
----
 
 ## Prediction Tasks
 
@@ -49,8 +45,6 @@
 | **Definition** | Readmission within 30 days |
 | **Positive Rate** | ~8.5% |
 | **Best AUROC** | 0.632 |
-
----
 
 ## Data Modalities
 
@@ -87,8 +81,6 @@
 | **disease_timeline** | LLM-generated disease progression timeline |
 | **patient_state_space** | 48-hour state vectors for each patient |
 
----
-
 ## Data Splits
 
 | Split | Subjects | Episodes | Ratio |
@@ -98,8 +90,6 @@
 | **Test** | 10,483 | 14,966 | 20% |
 
 **Note**: Splits are by patient (subject_id) to prevent data leakage.
-
----
 
 ## Episode JSON Schema (v2.0)
 
@@ -155,8 +145,6 @@
 }
 ```
 
----
-
 ## Disease Distribution
 
 | Disease | Count | Percentage |
@@ -166,16 +154,12 @@
 | **Sepsis + AKI** | 15,338 | 20.5% |
 | **None** | 12,241 | 16.4% |
 
----
-
 ## Syndrome Detection Performance
 
 | Disease | Precision | Recall | F1 Score |
 |---------|-----------|--------|----------|
 | **Sepsis** | 75.8% | 97.4% | 85.3% |
 | **AKI** | 97.7% | 52.6% | 68.4% |
-
----
 
 ## Known Limitations
 
@@ -185,15 +169,11 @@
 4. **Population Bias**: Single-center data (Beth Israel Deaconess)
 5. **Syndrome Detection**: High Sepsis Recall, Lower AKI Recall
 
----
-
 ## Ethical Considerations
 
 - Data is de-identified according to HIPAA Safe Harbor
 - PhysioNet Credentialed Access required
 - No individual patient re-identification possible
-
----
 
 ## Version History
 

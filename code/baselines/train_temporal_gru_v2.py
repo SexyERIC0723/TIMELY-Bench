@@ -1,11 +1,6 @@
 """
-训练时序 GRU 模型 - 改进版 v2.0
-包含以下增强功能：
-1. 统一配置管理
-2. Early Stopping 机制
-3. 学习率调度器
-4. 完整的错误处理
-5. 详细的结果保存（CSV/JSON）
+Train temporal GRU model.
+Includes early stopping, LR scheduler, and saves results.
 """
 
 import sys
@@ -47,9 +42,7 @@ LOG_DIR = RESULT_DIR / 'logs'
 RESULTS_CSV = RESULT_DIR / 'training_results.csv'
 RESULTS_JSON = RESULT_DIR / 'training_results.json'
 
-# ==========================================
-# Early Stopping 类
-# ==========================================
+# Early stopping
 class EarlyStopping:
     """Early Stopping 机制"""
     def __init__(self, patience=10, min_delta=1e-4, verbose=True):
@@ -83,9 +76,7 @@ class EarlyStopping:
 
         return self.early_stop
 
-# ==========================================
-# 训练日志记录类
-# ==========================================
+# Training logger
 class TrainingLogger:
     """记录训练过程"""
     def __init__(self, log_dir):
@@ -116,9 +107,7 @@ class TrainingLogger:
             json.dump(self.history, f, indent=2)
         return log_file
 
-# ==========================================
-# 文件验证函数
-# ==========================================
+# File validation
 def check_files():
     """验证所有必要文件是否存在"""
     print("\n检查数据文件...")
@@ -145,9 +134,7 @@ def check_files():
 
     return True
 
-# ==========================================
-# 数据加载与处理
-# ==========================================
+# Data loading
 def load_and_process_data():
     """加载并处理数据"""
     print("\n[1/5] 加载并清洗数据...")
@@ -262,9 +249,7 @@ def load_and_process_data():
 
     return X_tensor, df_clean['label'].values, df_clean['subject_id'].values, D
 
-# ==========================================
-# 模型定义
-# ==========================================
+# Model definitions
 class ClinicalGRU(nn.Module):
     """临床 GRU 模型"""
     def __init__(self, input_dim, hidden_dim, num_layers, output_dim=1, dropout=0.2):
@@ -290,9 +275,7 @@ class MIMICDataset(Dataset):
     def __len__(self):
         return len(self.y)
 
-# ==========================================
-# 训练一个epoch
-# ==========================================
+# Training functions
 def train_epoch(model, train_loader, optimizer, criterion, device):
     """训练一个epoch"""
     model.train()
@@ -310,9 +293,7 @@ def train_epoch(model, train_loader, optimizer, criterion, device):
 
     return total_loss / n_batches
 
-# ==========================================
-# 验证函数
-# ==========================================
+# Validation
 def validate(model, val_loader, criterion, device):
     """验证模型"""
     model.eval()
@@ -343,9 +324,7 @@ def validate(model, val_loader, criterion, device):
     avg_loss = total_loss / n_batches
     return avg_loss, auroc, auprc
 
-# ==========================================
-# 主训练流程
-# ==========================================
+# Main training
 def main():
     """主函数"""
     print("=" * 60)
@@ -679,9 +658,7 @@ def main():
         print(f"   Test AUPRC: {test_result['test_auprc']:.4f}")
     print(f"{'='*60}")
 
-# ==========================================
-# 程序入口
-# ==========================================
+# Entry point
 if __name__ == "__main__":
     try:
         main()

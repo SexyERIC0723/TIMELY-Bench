@@ -1,6 +1,6 @@
 """
-使用增强特征重新训练模型
-包括：reasoning.syndrome_detection, reasoning.reasoning_chain, reasoning.disease_timeline
+Retrain models with enhanced features.
+Uses syndrome_detection, reasoning_chain, disease_timeline.
 """
 
 import json

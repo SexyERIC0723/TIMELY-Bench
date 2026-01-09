@@ -1,8 +1,6 @@
 # TIMELY-Bench Dataset
 
-## Overview
-
-TIMELY-Bench is a benchmark dataset for time-aligned fusion of clinical time-series and notes in MIMIC-IV.
+Benchmark dataset for time-aligned fusion of clinical time-series and notes in MIMIC-IV.
 
 ## Dataset Structure
 
@@ -88,16 +86,14 @@ Each episode is a JSON object with the following structure:
 }
 ```
 
-## Statistics
+## Stats
 
-| Metric | Value |
-|--------|-------|
-| Total Episodes | 74829 |
-| With Notes | 45435 |
-| With Patterns | 74812 |
-| With Alignments | 27277 |
-| Total Patterns | 678373 |
-| Total Alignments | 137666 |
+- Total Episodes: 74,829
+- With Notes: 45,435
+- With Patterns: 74,812
+- With Alignments: 27,277
+- Total Patterns: 678,373
+- Total Alignments: 137,666
 
 ## Files
 

@@ -1,14 +1,12 @@
 """
-TIMELY-Bench v2.0 Configuration
-统一管理所有路径和超参数
+TIMELY-Bench config
 """
 
 import os
 from pathlib import Path
 
-# ==========================================
-# 路径配置
-# ==========================================
+# Paths
+# Project root (auto-detected)
 # 项目根目录 (自动计算，支持从任意位置运行)
 _SCRIPT_DIR = Path(__file__).resolve().parent
 if _SCRIPT_DIR.name == 'code':
@@ -36,9 +34,7 @@ TEMPORAL_ALIGNMENT_DIR = PROCESSED_DIR / 'temporal_alignment'
 RESULTS_DIR = ROOT_DIR / 'results'
 BENCHMARK_RESULTS_DIR = RESULTS_DIR / 'benchmark_results'
 
-# ==========================================
-# 数据文件路径
-# ==========================================
+# Data files
 # 原始数据
 TIMESERIES_FILE = RAW_DATA_DIR / 'timeseries.csv'
 NOTE_TIME_FILE = RAW_DATA_DIR / 'note_time.csv'
@@ -53,9 +49,7 @@ TRAIN_SPLIT_FILE = SPLITS_DIR / 'train.csv'
 VAL_SPLIT_FILE = SPLITS_DIR / 'val.csv'
 TEST_SPLIT_FILE = SPLITS_DIR / 'test.csv'
 
-# ==========================================
-# 模型超参数
-# ==========================================
+# Model hyperparameters
 # GRU模型
 HIDDEN_DIM = 64
 NUM_LAYERS = 2
@@ -75,17 +69,14 @@ LR_SCHEDULER_PATIENCE = 5
 LR_SCHEDULER_FACTOR = 0.5
 LR_SCHEDULER_MIN_LR = 1e-6
 
-# ==========================================
-# 数据划分配置
-# ==========================================
+
+# Data split config
 TEST_SIZE = 0.2
 USE_HOLDOUT_TEST = True
 N_FOLDS = 5
 RANDOM_STATE = 42
 
-# ==========================================
-# 特征配置
-# ==========================================
+# Feature config
 LLM_COLS = ['pneumonia', 'edema', 'pleural_effusion', 'pneumothorax', 'tubes_lines']
 WINDOWS = ['6h', '12h', '24h']
 
@@ -97,14 +88,10 @@ TASKS = CORE_TASKS
 # 队列配置
 COHORTS = ['all', 'sepsis', 'aki']
 
-# ==========================================
-# 设备配置
-# ==========================================
+# Device
 DEVICE = None  # 自动检测: cuda > mps > cpu
 
-# ==========================================
-# 辅助函数
-# ==========================================
+# Helpers
 def get_window_dir(window: str) -> Path:
     """获取时序窗口目录"""
     return DATA_WINDOWS_DIR / f'window_{window}'

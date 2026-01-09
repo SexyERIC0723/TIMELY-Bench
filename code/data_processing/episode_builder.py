@@ -1,19 +1,10 @@
 """
-TIMELY-Bench Episode Builder
-将现有CSV数据整合为统一的Episode JSON格式
+Episode Builder - combines CSV data into Episode JSON format.
 
-数据来源:
-1. timeseries.csv - 时序生理数据
-2. cohort_final.csv - 患者队列和标签
-3. note_time.csv - 临床笔记时间
-4. temporal_textual_alignment.csv - 模式-文本对齐
-5. pattern_detection/detected_patterns_24h.csv - 检测到的模式
-6. annotated_samples_*.csv - LLM标注结果
-7. llm_features_deepseek.csv - LLM提取的放射学特征
+Data sources: timeseries.csv, cohort_final.csv, note_time.csv,
+temporal_textual_alignment.csv, detected_patterns_24h.csv, llm_features_deepseek.csv
 
-输出:
-- episodes/ 目录下的JSON文件（每个患者一个）
-- episodes_summary.csv - 数据集统计摘要
+Output: episodes/ directory with one JSON per patient
 """
 
 import pandas as pd
@@ -26,9 +17,7 @@ from pathlib import Path
 from dataclasses import asdict
 
 
-# ==========================================
-# JSON序列化辅助
-# ==========================================
+# JSON serialization helper
 
 class NumpyEncoder(json.JSONEncoder):
     """处理numpy类型的JSON编码器"""
@@ -83,9 +72,7 @@ from episode_schema import (
 # 导入对齐数据索引器（用于处理 47GB 大文件）
 from alignment_index import AlignmentIndexer
 
-# ==========================================
-# 配置
-# ==========================================
+# Config
 
 # 输入文件
 ALIGNMENT_FILE = TEMPORAL_ALIGNMENT_DIR / 'temporal_textual_alignment.csv'
@@ -100,9 +87,7 @@ OUTPUT_DIR = PROCESSED_DIR / 'episodes'
 OBSERVATION_WINDOW_HOURS = 24
 
 
-# ==========================================
-# Episode Builder 类
-# ==========================================
+# Episode Builder class
 
 class EpisodeBuilder:
     """从CSV数据构建Episode对象"""

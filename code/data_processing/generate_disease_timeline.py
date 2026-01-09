@@ -1,6 +1,6 @@
 """
-使用 DeepSeek API 为所有 Episode 生成 Disease Timeline
-预估成本: ~$50 (74,829 条)
+Generate disease timelines using DeepSeek API.
+Est. cost: ~$50 for 74,829 episodes.
 """
 
 import json
