@@ -25,7 +25,7 @@ warnings.filterwarnings('ignore')
 
 # 配置
 COHORTS_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/cohorts')
-EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_all')
+EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_enhanced')
 EMBEDDINGS_FILE = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/text_embeddings/clinical_bert_embeddings.npy')
 CONCEPTS_FILE = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/text_concepts/spacy_concepts.csv')
 RESULTS_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/results/condition_analysis')

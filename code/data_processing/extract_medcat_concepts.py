@@ -14,7 +14,7 @@ from tqdm import tqdm
 from collections import Counter
 
 # 配置
-EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_all')
+EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_enhanced')
 OUTPUT_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/text_concepts')
 BATCH_SIZE = 100
 

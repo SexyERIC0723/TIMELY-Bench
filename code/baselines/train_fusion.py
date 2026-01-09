@@ -32,7 +32,7 @@ from config import (
 )
 
 # 配置
-EPISODES_DIR = Path(__file__).parent.parent.parent / 'episodes' / 'episodes_all'
+EPISODES_DIR = Path(__file__).parent.parent.parent / 'episodes' / 'episodes_enhanced'
 OUTPUT_DIR = RESULTS_DIR / 'fusion_baselines'
 
 

@@ -29,7 +29,7 @@ from config import (
 )
 
 # 配置
-EPISODES_DIR = Path(__file__).parent.parent.parent / 'episodes' / 'episodes_all'
+EPISODES_DIR = Path(__file__).parent.parent.parent / 'episodes' / 'episodes_enhanced'
 SPLITS_DIR = PROCESSED_DIR.parent / 'splits'
 OUTPUT_DIR = RESULTS_DIR / 'tabular_baselines'
 

@@ -20,7 +20,7 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = _SCRIPT_DIR.parent.parent
 
 ANNOTATIONS_FILE = PROJECT_ROOT / 'data' / 'processed' / 'pattern_annotations' / 'smart_annotations_full.csv'
-EPISODES_ALL_DIR = PROJECT_ROOT / 'episodes' / 'episodes_all'
+EPISODES_ALL_DIR = PROJECT_ROOT / 'episodes' / 'episodes_enhanced'
 
 # 配置
 MAX_UNRELATED_PER_EPISODE = 50  # 每个 Episode 最多保留 50 条 UNRELATED

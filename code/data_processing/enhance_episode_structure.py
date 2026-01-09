@@ -10,7 +10,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 # 配置
-EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_all')
+EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_enhanced')
 COHORTS_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/cohorts')
 OUTPUT_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_enhanced')
 

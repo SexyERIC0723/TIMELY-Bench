@@ -29,7 +29,7 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = _SCRIPT_DIR.parent.parent
 
 EPISODES_DIR = PROJECT_ROOT / 'episodes'
-EPISODES_ALL_DIR = EPISODES_DIR / 'episodes_all'  # 新的输出目录
+EPISODES_ALL_DIR = EPISODES_DIR / 'episodes_enhanced'  # 新的输出目录
 LOG_FILE = EPISODES_ALL_DIR / 'batch_build_all.log'
 FAILED_IDS_FILE = EPISODES_ALL_DIR / 'failed_stay_ids.txt'
 

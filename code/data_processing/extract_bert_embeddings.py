@@ -15,7 +15,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel
 
 # 配置
-EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_all')
+EPISODES_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/episodes/episodes_enhanced')
 OUTPUT_DIR = Path('/home/ubuntu/TIMELY-Bench_Final/data/processed/text_embeddings')
 MODEL_NAME = 'emilyalsentzer/Bio_ClinicalBERT'
 BATCH_SIZE = 32
