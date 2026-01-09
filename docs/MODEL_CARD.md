@@ -1,8 +1,8 @@
-# Model Card: TIMELY-Bench Baselines
+# Model Card: TIMELY-Bench Baselines v2.0
 
 ## Overview
 
-This document describes the baseline models implemented in TIMELY-Bench for benchmarking multimodal EHR fusion.
+This document describes the baseline models implemented in TIMELY-Bench for benchmarking multimodal EHR fusion. Version 2.0 adds enhanced reasoning features including syndrome detection, reasoning chains, and LLM-generated disease timelines.
 
 ---
 
@@ -11,12 +11,19 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 | Model | Type | Input | Test AUROC (Mortality) |
 |-------|------|-------|------------------------|
 | **Full Feature Fusion** | Tree-based | TS + Annotations + BERT + Concepts | **0.844** |
+| Enhanced Reasoning | Tree-based | TS + Syndrome + Timeline + State | 0.816 |
 | BERT + Annotation | Tree-based | TS + Annotations + BERT | 0.840 |
 | Enhanced GRU | Deep Learning | Time-series + LLM + Annotations | 0.831 |
 | Temporal GRU | Deep Learning | Time-series + LLM | 0.824 |
 | XGBoost (Tabular) | Tree-based | Time-series stats + Annotations | 0.804 |
-| Early Fusion | Tree-based | All features concatenated | 0.779 |
-| Text-only | Tree-based | Annotation features only | 0.759 |
+
+### Prediction Task Results
+
+| Task | Best Model | AUROC |
+|------|------------|-------|
+| **Mortality** | Full Feature Fusion | 0.844 |
+| **Prolonged LOS** | Full Feature Fusion | 0.844 |
+| **30-Day Readmission** | XGBoost | 0.632 |
 
 ### Disease-Stratified Models (5-fold CV)
 
@@ -30,7 +37,33 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 
 ## Model Details
 
-### 1. Enhanced GRU (Best Performance)
+### 1. Enhanced Reasoning Model (NEW in v2.0)
+
+| Parameter | Value |
+|-----------|-------|
+| Architecture | XGBoost |
+| Feature Count | 46 |
+| Key Features | syndrome_detection, disease_timeline, patient_state_space |
+| Test AUROC (Mortality) | 0.816 |
+| Test AUROC (LOS) | 0.793 |
+
+**New Reasoning Features:**
+- `sepsis_detected`, `aki_detected`, `ards_detected`
+- `dt_has_sepsis`, `dt_onset_hour`, `dt_deteriorating`
+- `rc_evidence_count`, `rc_confidence`
+- `pss_hours`, `pss_last_severity`
+
+### 2. Full Feature Fusion (Best Overall)
+
+| Parameter | Value |
+|-----------|-------|
+| Architecture | XGBoost |
+| n_estimators | 100 |
+| max_depth | 6 |
+| Feature Sets | Vitals + BERT + Concepts + Annotations |
+| Test AUROC | 0.844 |
+
+### 3. Enhanced GRU
 
 | Parameter | Value |
 |-----------|-------|
@@ -47,17 +80,7 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 - Early Stopping: patience=10
 - 5-Fold GroupKFold CV (by subject_id)
 
-### 2. Temporal GRU
-
-| Parameter | Value |
-|-----------|-------|
-| Architecture | Standard GRU |
-| Hidden Dim | 128 |
-| Num Layers | 2 |
-| Dropout | 0.2 |
-| Input Dim | 30 (25 physio + 5 LLM) |
-
-### 3. XGBoost (Tabular)
+### 4. XGBoost (Tabular)
 
 | Parameter | Value |
 |-----------|-------|
@@ -65,13 +88,6 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 | max_depth | 6 |
 | learning_rate | 0.1 |
 | Features | 35 (time-series mean/std + annotations) |
-
-### 4. Logistic Regression
-
-| Parameter | Value |
-|-----------|-------|
-| max_iter | 1000 |
-| Regularization | L2 (default) |
 
 ---
 
@@ -96,26 +112,36 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 | `n_patterns` | Count of detected patterns |
 | `n_conditions` | Count of associated conditions |
 
-### ClinicalBERT Embedding Features (New)
+### Enhanced Reasoning Features (NEW in v2.0)
+
+| Feature | Description |
+|---------|-------------|
+| `sepsis_detected` | Syndrome detection result |
+| `aki_detected` | AKI detection result |
+| `aki_stage` | AKI severity stage (1-3) |
+| `dt_has_sepsis` | Disease timeline includes sepsis |
+| `dt_onset_hour` | Predicted disease onset hour |
+| `dt_deteriorating` | Patient prognosis is deteriorating |
+| `rc_evidence_count` | Number of reasoning evidence |
+| `rc_confidence` | Reasoning chain confidence |
+| `pss_hours` | Hours in patient state-space |
+
+### ClinicalBERT Embedding Features
 
 | Feature | Description |
 |---------|-------------|
 | `bert_0` to `bert_49` | Top 50 PCA dimensions from 768-dim ClinicalBERT embeddings |
 | **Model** | emilyalsentzer/Bio_ClinicalBERT |
 | **Pooling** | Mean pooling across notes per stay |
-| **Original dim** | 768 → 50 (dimensionality reduction) |
 
-### NER Medical Concept Features (New)
+### NER Medical Concept Features
 
 | Feature | Description |
 |---------|-------------|
 | `concept_DISEASE` | Count of disease entities |
 | `concept_DRUG` | Count of drug/medication entities |
 | `concept_PROCEDURE` | Count of procedure entities |
-| `concept_ANATOMICAL` | Count of anatomical entities |
-| `concept_*` (40 dim) | Various medical concept categories |
 | **Model** | spaCy en_core_sci_lg |
-
 
 ---
 
@@ -125,8 +151,9 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 
 | Model | AUROC | AUPRC |
 |-------|-------|-------|
+| Full Feature Fusion | 0.844 | 0.486 |
+| Enhanced Reasoning | 0.816 | 0.418 |
 | Enhanced GRU | 0.831 | 0.468 |
-| Temporal GRU | 0.824 | 0.455 |
 | XGBoost | 0.804 | 0.409 |
 
 ### Calibration
@@ -165,13 +192,14 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 
 - **Primary**: Benchmark for multimodal EHR fusion research
 - **Secondary**: Educational demonstration of fusion strategies
+- **New**: Clinical reasoning and disease progression modeling
 
 ## Limitations
 
 1. **Single-task optimization**: Models optimized for mortality only
 2. **Fixed architecture**: No hyperparameter tuning for GRU
 3. **Limited fusion strategies**: Only early/late fusion tested
-4. **No cross-modal attention**: Missing attention mechanisms
+4. **Syndrome Detection**: High Sepsis Recall, Lower AKI Recall
 
 ## Ethical Considerations
 
@@ -189,7 +217,7 @@ python code/baselines/train_tabular_baselines.py
 python code/baselines/train_text_only.py
 python code/baselines/train_enhanced_gru.py
 python code/baselines/train_fusion.py
-python code/baselines/train_aligner_comparison.py
+python code/baselines/train_enhanced_reasoning.py  # NEW
 
 # Evaluate
 python code/baselines/eval_calibration.py
@@ -198,13 +226,22 @@ python code/baselines/eval_note_ablation.py
 
 ---
 
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v1.0 | 2025-12 | Initial release |
+| **v2.0** | **2026-01** | Added enhanced reasoning model, syndrome detection features, disease timeline features |
+
+---
+
 ## Citation
 
 ```bibtex
-@misc{timely-bench-2025,
-  title={TIMELY-Bench: A Benchmark for Time-Aligned Fusion of Clinical Time-Series and Notes},
+@misc{timely-bench-2026,
+  title={TIMELY-Bench: A Unified Framework for Multimodal Clinical Reasoning at Scale},
   author={[Author Names]},
-  year={2025},
-  institution={King's College London}
+  year={2026},
+  institution={King's College London, LOPPN Department}
 }
 ```
