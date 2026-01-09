@@ -9,12 +9,14 @@
 
 ---
 
-## 📈 Commit Activity
+## 📈 Project Status
 
-[![GitHub Commits](https://img.shields.io/github/commit-activity/m/SexyERIC0723/TIMELY-Bench?style=flat-square&label=Monthly%20Commits)](https://github.com/SexyERIC0723/TIMELY-Bench/commits/main)
-[![Last Commit](https://img.shields.io/github/last-commit/SexyERIC0723/TIMELY-Bench?style=flat-square)](https://github.com/SexyERIC0723/TIMELY-Bench/commits/main)
-
-![Commit Activity](https://repobeats.axiom.co/api/embed/placeholder-for-repo-activity.svg)
+| Metric | Value |
+|--------|-------|
+| **Total Episodes** | 74,829 |
+| **Enhanced Episodes** | 74,711 |
+| **LLM-Generated Timelines** | 74,711 |
+| **Last Updated** | January 2026 |
 
 ---
 
