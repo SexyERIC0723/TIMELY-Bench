@@ -1,10 +1,20 @@
 # TIMELY-Bench
 
-**A Benchmark for Time-Aligned Fusion of Clinical Time-Series and Notes in MIMIC**
+**A Unified Framework for Multimodal Clinical Reasoning at Scale**
 
 [![License](https://img.shields.io/badge/License-PhysioNet-blue.svg)](https://physionet.org/)
 [![Python](https://img.shields.io/badge/Python-3.12+-green.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org)
+[![Episodes](https://img.shields.io/badge/Episodes-74%2C829-orange.svg)]()
+
+---
+
+## 📈 Commit Activity
+
+[![GitHub Commits](https://img.shields.io/github/commit-activity/m/SexyERIC0723/TIMELY-Bench?style=flat-square&label=Monthly%20Commits)](https://github.com/SexyERIC0723/TIMELY-Bench/commits/main)
+[![Last Commit](https://img.shields.io/github/last-commit/SexyERIC0723/TIMELY-Bench?style=flat-square)](https://github.com/SexyERIC0723/TIMELY-Bench/commits/main)
+
+![Commit Activity](https://repobeats.axiom.co/api/embed/placeholder-for-repo-activity.svg)
 
 ---
 
@@ -13,20 +23,57 @@
 TIMELY-Bench is a reproducible benchmark for multimodal EHR fusion that:
 
 1. **Curates** benchmark-ready cohorts from MIMIC-IV with transparent alignment protocols
-2. **Implements** lightweight baselines and unified metrics for fair comparison
-3. **Releases** data schemas, code, and documentation for the community
+2. **Implements** LLM-guided probabilistic disease timelines and clinical reasoning
+3. **Provides** comprehensive evaluation suite for clinical prediction tasks
+4. **Releases** data schemas, code, and documentation for the community
 
 ---
 
 ## 📊 Key Results
 
-| Model | Mortality AUROC | Description |
-|-------|-----------------|-------------|
-| **Enhanced GRU** | **0.831** | Time-series + LLM + Annotations |
-| Temporal GRU | 0.824 | Time-series + LLM |
-| XGBoost (Tabular) | 0.804 | Tabular features + Annotations |
-| Early Fusion | 0.779 | Feature concatenation |
-| Text-only | 0.759 | Annotation features only |
+### Prediction Tasks
+
+| Task | AUROC | Status |
+|------|-------|--------|
+| **Mortality** | **0.844** | ✅ |
+| **Prolonged LOS** | **0.844** | ✅ |
+| **30-Day Readmission** | **0.632** | ✅ |
+
+### Disease-Stratified Analysis
+
+| Disease | AUROC | Status |
+|---------|-------|--------|
+| **AKI** | **0.820** | ✅ |
+| **Sepsis** | **0.807** | ✅ |
+| **ARDS** | **0.676** | ✅ |
+
+### Alignment Windows Comparison
+
+| Window | AUROC | Recommendation |
+|--------|-------|----------------|
+| ±6h | 0.777 | High precision, low coverage |
+| ±12h | 0.800 | Balanced |
+| **±24h** | **0.833** | Best performance |
+
+---
+
+## 🚀 New Features
+
+### LLM-Guided Disease Timelines
+- **74,711 episodes** processed with DeepSeek API
+- Probabilistic disease progression tracking
+- Onset hour prediction and prognosis assessment
+
+### Comprehensive Reasoning Chain
+- Syndrome detection (Sepsis F1: 85.3%, AKI F1: 68.4%)
+- Rule-based diagnostic reasoning
+- Patient state-space reconstruction (48-hour vectors)
+
+### Enhanced Episode Structure
+- `patient_state_space`: Hourly state vectors
+- `reasoning.syndrome_detection`: Clinical criteria detection
+- `reasoning.reasoning_chain`: Diagnostic evidence chain
+- `reasoning.disease_timeline`: LLM-generated progression
 
 ---
 
@@ -37,33 +84,26 @@ TIMELY-Bench_Final/
 ├── code/
 │   ├── baselines/              # Model training scripts
 │   │   ├── train_tabular_baselines.py
-│   │   ├── train_text_only.py
-│   │   ├── train_enhanced_gru.py
-│   │   ├── train_fusion.py
-│   │   ├── train_aligner_comparison.py
-│   │   ├── eval_calibration.py
-│   │   └── eval_note_ablation.py
+│   │   ├── train_los_baselines.py
+│   │   ├── train_readmission_baselines.py
+│   │   ├── train_differential_diagnosis.py
+│   │   └── ...
 │   ├── data_processing/        # Data processing pipeline
-│   │   ├── episode_builder.py
-│   │   ├── pattern_detector.py
-│   │   └── smart_rule_matcher_full.py
-│   └── config.py               # Configuration
+│   │   ├── generate_disease_timeline.py
+│   │   ├── generate_state_space.py
+│   │   ├── generate_reasoning_chain.py
+│   │   ├── syndrome_detector.py
+│   │   └── ...
+│   └── config.py
 ├── data/
-│   └── processed/              # Processed data files
+│   └── processed/
+│       ├── disease_timelines/   # LLM-generated timelines
+│       ├── hidden_features/     # Latent diagnostic features
+│       └── medcat_umls/         # UMLS concept extraction
 ├── episodes/
-│   └── episodes_all/           # 74,829 Episode JSONs
-├── results/                    # Training results
-│   ├── tabular_baselines/
-│   ├── text_only_baselines/
-│   ├── enhanced_gru/
-│   ├── fusion_baselines/
-│   ├── aligner_comparison/
-│   ├── calibration/
-│   └── note_ablation/
-└── docs/                       # Documentation
-    ├── DATA_CARD.md
-    ├── ALIGNMENT_PROTOCOL_CARD.md
-    └── MODEL_CARD.md
+│   └── episodes_enhanced/       # 74,829 Enhanced Episodes
+├── results/                     # Training results
+└── docs/                        # Documentation
 ```
 
 ---
@@ -78,7 +118,7 @@ python -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install pandas numpy scikit-learn xgboost torch tqdm
+pip install pandas numpy scikit-learn xgboost torch tqdm openai aiohttp
 ```
 
 ### Run Baselines
@@ -86,30 +126,21 @@ pip install pandas numpy scikit-learn xgboost torch tqdm
 ```bash
 cd code/baselines
 
-# Train tabular baselines (XGBoost, LR)
-python train_tabular_baselines.py
+# Train mortality prediction
+python train_los_baselines.py
 
-# Train text-only model
-python train_text_only.py
+# Train readmission prediction
+python train_readmission_baselines.py
 
-# Train enhanced GRU
-python train_enhanced_gru.py
-
-# Train fusion models
-python train_fusion.py
-
-# Run aligner comparison (±6h/±12h/±24h)
-python train_aligner_comparison.py
+# Train differential diagnosis
+python train_differential_diagnosis.py
 ```
 
-### Evaluate
+### Generate Disease Timelines (requires API key)
 
 ```bash
-# Calibration metrics (ECE, Hosmer-Lemeshow)
-python eval_calibration.py
-
-# Note category ablation
-python eval_note_ablation.py
+export DEEPSEEK_API_KEY='your-api-key'
+python code/data_processing/generate_timeline_concurrent.py
 ```
 
 ---
@@ -120,16 +151,7 @@ python eval_note_ablation.py
 |------|------------|---------------|
 | **In-Hospital Mortality** | Death during hospital stay | ~12.4% |
 | **Prolonged LOS** | ICU stay > 7 days | ~15.2% |
-
----
-
-## 🔬 Alignment Windows
-
-| Window | AUROC | Recommendation |
-|--------|-------|----------------|
-| ±6h | 0.777 | High precision, low coverage |
-| ±12h | 0.800 | Balanced |
-| **±24h** | **0.833** | Best performance |
+| **30-Day Readmission** | Readmission within 30 days | ~8.5% |
 
 ---
 
@@ -138,31 +160,18 @@ python eval_note_ablation.py
 - [Data Card](docs/DATA_CARD.md) - Dataset description and statistics
 - [Alignment Protocol Card](docs/ALIGNMENT_PROTOCOL_CARD.md) - Time alignment details
 - [Model Card](docs/MODEL_CARD.md) - Baseline model specifications
-
----
-
-## 📊 Results Files
-
-| File | Description |
-|------|-------------|
-| `results/tabular_baselines/tabular_results.csv` | XGBoost/LR results |
-| `results/text_only_baselines/text_only_results.csv` | Text-only results |
-| `results/enhanced_gru/enhanced_gru_results.csv` | Enhanced GRU results |
-| `results/fusion_baselines/fusion_results.csv` | Early/Late fusion results |
-| `results/aligner_comparison/aligner_results.csv` | Window comparison |
-| `results/calibration/calibration_results.csv` | ECE/HL metrics |
-| `results/note_ablation/note_ablation_results.csv` | Note category ablation |
+- [Results Summary](docs/RESULTS_SUMMARY.md) - Comprehensive results
 
 ---
 
 ## 📜 Citation
 
 ```bibtex
-@misc{timely-bench-2025,
-  title={TIMELY-Bench: A Benchmark for Time-Aligned Fusion of 
-         Clinical Time-Series and Notes in MIMIC},
+@misc{timely-bench-2026,
+  title={TIMELY-Bench: A Unified Framework for Multimodal 
+         Clinical Reasoning at Scale},
   author={[Author Name]},
-  year={2025},
+  year={2026},
   institution={King's College London}
 }
 ```
@@ -178,4 +187,4 @@ This project uses MIMIC-IV data, which requires PhysioNet Credentialed Access.
 ## 🙏 Acknowledgments
 
 - MIMIC-IV Database (PhysioNet)
-- King's College London, Department of Informatics
+- King's College London, LOPPN Department
