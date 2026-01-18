@@ -10,7 +10,8 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 
 | Model | Type | Input | Test AUROC (Mortality) |
 |-------|------|-------|------------------------|
-| **Full Feature Fusion** | Tree-based | TS + Annotations + BERT + Concepts | **0.844** |
+| **Delta Features** | Tree-based | TS + Delta (δ6h, δ12h) | **0.857** |
+| Full Feature Fusion | Tree-based | TS + Annotations + BERT + Concepts | 0.844 |
 | Enhanced Reasoning | Tree-based | TS + Syndrome + Timeline + State | 0.816 |
 | BERT + Annotation | Tree-based | TS + Annotations + BERT | 0.840 |
 | Enhanced GRU | Deep Learning | Time-series + LLM + Annotations | 0.831 |
@@ -21,9 +22,18 @@ This document describes the baseline models implemented in TIMELY-Bench for benc
 
 | Task | Best Model | AUROC |
 |------|------------|-------|
-| **Mortality** | Full Feature Fusion | 0.844 |
+| **Mortality** | Delta Features | **0.857** |
 | **Prolonged LOS** | Full Feature Fusion | 0.844 |
 | **30-Day Readmission** | XGBoost | 0.632 |
+
+### Alignment Window Results
+
+| Window | Test AUROC |
+|--------|------------|
+| D0 (Daily) | 0.798 |
+| ±6h | 0.777 |
+| ±12h | 0.800 |
+| **±24h** | **0.833** |
 
 ### Disease-Stratified Models (5-fold CV)
 

@@ -26,11 +26,20 @@ TIMELY-Bench is a reproducible benchmark for multimodal EHR fusion. It:
 
 **Prediction Tasks**
 
-| Task | AUROC |
-|------|-------|
-| Mortality | 0.844 |
-| Prolonged LOS | 0.844 |
-| 30-Day Readmission | 0.632 |
+| Task | Best Model | AUROC |
+|------|------------|-------|
+| Mortality | **Delta Features** | **0.857** |
+| Prolonged LOS | Full Fusion | 0.844 |
+| 30-Day Readmission | XGBoost | 0.632 |
+
+**Alignment Windows**
+
+| Window | AUROC |
+|--------|-------|
+| D0 (Daily) | 0.798 |
+| ±6h | 0.777 |
+| ±12h | 0.800 |
+| **±24h** | **0.833** |
 
 **Disease-Stratified**
 
@@ -39,8 +48,6 @@ TIMELY-Bench is a reproducible benchmark for multimodal EHR fusion. It:
 | AKI | 0.820 |
 | Sepsis | 0.807 |
 | ARDS | 0.676 |
-
-Alignment window ±24h gives best performance (AUROC 0.833).
 
 ---
 
