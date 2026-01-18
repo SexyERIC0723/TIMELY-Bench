@@ -36,3 +36,4 @@ dataset/timely_bench_episodes.jsonl
 # Exclude MSc project summary
 docs/MSc_Project_Summary.html
 docs/MSc_Project_Summary.md
+report/

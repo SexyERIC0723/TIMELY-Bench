@@ -10,6 +10,7 @@ This document describes the time-alignment protocols used in TIMELY-Bench to ali
 
 | Window ID | Description | Time Offset | Use Case |
 |-----------|-------------|-------------|----------|
+| **D0** | Same calendar day | Same day as pattern | Daily aggregated features |
 | **W6** | ±6 hours | charttime ± 6h | High temporal precision |
 | **W12** | ±12 hours | charttime ± 12h | Balanced precision/coverage |
 | **W24** | ±24 hours | charttime ± 24h | Maximum coverage |
@@ -35,11 +36,12 @@ For each (time-series observation, clinical note) pair:
 
 | Window | Test AUROC | Coverage | n_alignments/episode |
 |--------|------------|----------|---------------------|
+| **D0** | 0.798 | ~50% | ~650 |
 | ±6h | 0.777 | 45% | ~520 |
 | ±12h | 0.800 | 72% | ~890 |
 | **±24h** | **0.833** | 100% | ~1,350 |
 
-**Conclusion**: ±24h window provides best predictive performance.
+**Conclusion**: ±24h window provides best predictive performance. D0 (daily) offers a balance for aggregated features.
 
 ---
 
@@ -119,7 +121,7 @@ python code/data_processing/batch_build_all_episodes.py
 
 ## Limitations
 
-1. **Window granularity**: Only 3 predefined windows tested
+1. **Window granularity**: 4 predefined windows tested (D0, ±6h, ±12h, ±24h)
 2. **Note timestamp accuracy**: Some notes have imprecise `charttime`
 3. **Pattern coverage**: Only 15 common patterns detected
 4. **Annotation noise**: Rule-based annotations may have false positives
