@@ -54,6 +54,16 @@ Quality Categories:
 | **Diagnosis-Anchored** | Align to ICD diagnosis time | Harutyunyan et al., 2019 |
 | **Intervention-Based** | Align to treatment initiation | MIMIC-Extract |
 
+### 2.4 Time Unit Granularity
+
+| Unit | Field | Precision | Use Case |
+|------|-------|-----------|----------|
+| **charttime** | Timestamp | Minute-level | Vital signs, lab results |
+| **chartdate** | Date only | Day-level | D0 daily alignment |
+| **storetime** | Storage timestamp | Minute-level | Note entry time |
+
+> **Note**: MIMIC-IV uses `charttime` for precise temporal alignment. For D0 (daily) alignment, we aggregate events by calendar date derived from `charttime`.
+
 ---
 
 ## 3. Taxonomy of Fusion Architectures

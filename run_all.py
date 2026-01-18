@@ -116,6 +116,7 @@ def main():
     parser.add_argument('--baselines', action='store_true', help='只运行XGBoost基线')
     parser.add_argument('--fusion', action='store_true', help='只运行融合实验')
     parser.add_argument('--gru', action='store_true', help='只运行GRU模型')
+    parser.add_argument('--delta', action='store_true', help='只运行Delta特征训练')
     args = parser.parse_args()
 
     print("=" * 60)
@@ -141,8 +142,9 @@ def main():
     baselines_script = root / 'code' / 'baselines' / 'run_baselines.py'
     fusion_script = root / 'code' / 'baselines' / 'run_fusion_baselines.py'
     gru_script = root / 'code' / 'baselines' / 'run_temporal_gru.py'
+    delta_script = root / 'code' / 'baselines' / 'train_with_delta_features.py'
 
-    run_all = not (args.baselines or args.fusion or args.gru)
+    run_all = not (args.baselines or args.fusion or args.gru or args.delta)
 
     if args.baselines or run_all:
         if baselines_script.exists():
@@ -155,6 +157,10 @@ def main():
     if args.gru or run_all:
         if gru_script.exists():
             run_script(gru_script, "运行GRU模型")
+
+    if args.delta or run_all:
+        if delta_script.exists():
+            run_script(delta_script, "运行Delta特征训练")
 
     print("\n" + "=" * 60)
     print("Pipeline完成!")
